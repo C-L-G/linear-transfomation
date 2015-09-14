@@ -9,7 +9,7 @@ ______________  \/  \/ | \/ | ______________
 	
 --English Description:
 	
---Version:VERA.1.0.0
+--Version:VERA.1.0.1
 --Data modified:
 --author:Young-ÎâÃ÷
 --E-mail: wmy367@Gmail.com
@@ -39,7 +39,7 @@ reg [DT_I+DT_D-1:0]	delta_reg;		//[3:0].[DT-4:0]
 								//32'hxxxx_xxxx_xxxx_xxxx
 								//DT'h_______xx.x________
 always@(posedge clock)
-	if(|slope[2*DSIZE:DSIZE+DT_I+1])
+	if(|slope[2*DSIZE-1:DSIZE+DT_I+1])
 			delta_reg	<= {(DT_I+DT_D){1'b1}};
 	else 	delta_reg	<= {slope[DSIZE+:DT_I],slope[DSIZE-1-:DT_D]};
 

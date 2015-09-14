@@ -27,6 +27,8 @@ module linear_transfomation_SM #(
 	input					rst_n       ,
 	input					cal_begin   ,
 	output					cal_valid   ,
+	input [DSIZE-1:0]		indata      ,
+	output[DSIZE-1:0]		outdata     ,
 
 	input [DSIZE-1:0]		C00			,
 	input [DSIZE-1:0]		C01         ,
@@ -135,7 +137,7 @@ linear_transfomation_func #(
 /*	input [DT-1:0]		*/	.delta12    (delta12    ),
 /*	input [DT-1:0]		*/	.delta13    (delta13    ),
 /*	input [DT-1:0]		*/	.delta14    (delta14    ),
-/*	input [DT-1:0]		*/	.delta15    (0          ),
+/*	input [DT-1:0]		*/	.delta15    ({(DT_I+DT_D){1'b0}}          ),
 /*                      */
 /*	input [DSIZE-1:0]	*/	.M00		(DM *  0	),			
 /*	input [DSIZE-1:0]	*/	.M01        (DM *  1    ),
@@ -152,7 +154,24 @@ linear_transfomation_func #(
 /*	input [DSIZE-1:0]	*/	.M12        (DM * 12    ),
 /*	input [DSIZE-1:0]	*/	.M13        (DM * 13    ),
 /*	input [DSIZE-1:0]	*/	.M14        (DM * 14    ),
-/*	input [DSIZE-1:0]	*/	.M15        (DM * 15    )
+/*	input [DSIZE-1:0]	*/	.M15        (DM * 15    ),
+
+/*	input [DSIZE-1:0]	*/	.C00		(C00		),			
+/*	input [DSIZE-1:0]	*/	.C01        (C01        ),
+/*	input [DSIZE-1:0]	*/	.C02        (C02        ),
+/*	input [DSIZE-1:0]	*/	.C03        (C03        ),
+/*	input [DSIZE-1:0]	*/	.C04        (C04        ),
+/*	input [DSIZE-1:0]	*/	.C05        (C05        ),
+/*	input [DSIZE-1:0]	*/	.C06        (C06        ),
+/*	input [DSIZE-1:0]	*/	.C07        (C07        ),
+/*	input [DSIZE-1:0]	*/	.C08        (C08        ),
+/*	input [DSIZE-1:0]	*/	.C09        (C09        ),
+/*	input [DSIZE-1:0]	*/	.C10        (C10        ),
+/*	input [DSIZE-1:0]	*/	.C11        (C11        ),
+/*	input [DSIZE-1:0]	*/	.C12        (C12        ),
+/*	input [DSIZE-1:0]	*/	.C13        (C13        ),
+/*	input [DSIZE-1:0]	*/	.C14        (C14        ),
+/*	input [DSIZE-1:0]	*/	.C15        (C15        )
 );
 
 

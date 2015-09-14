@@ -1,7 +1,8 @@
 clear all
 close all
 a = dlmread('in_out.txt');
-plot(a(1:256,1),a(5:260,2),'LineWidth',2)
+a = [a(1:256,1),a(5:260,2)];
+plot(a(:,1),a(:,2),'LineWidth',2)
 axis equal
 grid on 
 

@@ -36,8 +36,8 @@ module linear_transfomation #(
 	parameter [DSIZE-1:0]		M12         	= 16+M11,
 	parameter [DSIZE-1:0]		M13         	= 16+M12,
 	parameter [DSIZE-1:0]		M14         	= 16+M13,
-	parameter [DSIZE-1:0]		M15         	= 16+M14
- 
+	parameter [DSIZE-1:0]		M15         	= 16+M14,
+	parameter [DSIZE-1:0]		M16         	= 16+M15-1
 )(
 	input					clock 		,	
 	input					rst_n       ,
@@ -61,7 +61,8 @@ module linear_transfomation #(
 	input [DSIZE-1:0]		C12         ,
 	input [DSIZE-1:0]		C13         ,
 	input [DSIZE-1:0]		C14         ,
-	input [DSIZE-1:0]		C15          
+	input [DSIZE-1:0]		C15         ,
+	input [DSIZE-1:0]		C16           
 );
  
   
@@ -81,7 +82,7 @@ wire [DT_I+DT_D-1:0]			delta11     ;
 wire [DT_I+DT_D-1:0]			delta12     ;
 wire [DT_I+DT_D-1:0]			delta13     ;
 wire [DT_I+DT_D-1:0]			delta14     ;  
-    
+wire [DT_I+DT_D-1:0]			delta15     ;     
     
     
 gen_deltas_list #(
@@ -103,7 +104,8 @@ gen_deltas_list #(
 	.M12         		(M12		),
 	.M13         		(M13		),
 	.M14         		(M14		),
-	.M15         		(M15		)
+	.M15         		(M15		),
+	.M16         		(M16		)
 )gen_deltas_list_inst(
 /*	input				*/	.clock 		(clock 		),		
 /*	input				*/	.rst_n      (rst_n      ), 
@@ -126,6 +128,7 @@ gen_deltas_list #(
 /*	input [DSIZE-1:0]	*/	.C13        (C13        ),
 /*	input [DSIZE-1:0]	*/	.C14        (C14        ),
 /*	input [DSIZE-1:0]	*/	.C15        (C15        ),
+/*	input [DSIZE-1:0]	*/	.C16        (C16        ),
 /*                      */
 /*	output [DT-1:0]		*/	.delta00	(delta00	), 	
 /*	output [DT-1:0]		*/	.delta01    (delta01    ),
@@ -141,7 +144,8 @@ gen_deltas_list #(
 /*	output [DT-1:0]		*/	.delta11    (delta11    ),
 /*	output [DT-1:0]		*/	.delta12    (delta12    ),
 /*	output [DT-1:0]		*/	.delta13    (delta13    ),
-/*	output [DT-1:0]		*/	.delta14    (delta14    )
+/*	output [DT-1:0]		*/	.delta14    (delta14    ),
+/*	output [DT-1:0]		*/	.delta15    (delta15    )
 );
 
 
@@ -169,7 +173,7 @@ linear_transfomation_func #(
 /*	input [DT-1:0]		*/	.delta12    (delta12    ),
 /*	input [DT-1:0]		*/	.delta13    (delta13    ),
 /*	input [DT-1:0]		*/	.delta14    (delta14    ),
-/*	input [DT-1:0]		*/	.delta15    ({(DT_I+DT_D){1'b0}} ),
+/*	input [DT-1:0]		*/	.delta15    (delta15 	),
 /*                      */
 /*	input [DSIZE-1:0]	*/	.M00		(M00		),			
 /*	input [DSIZE-1:0]	*/	.M01        (M01		),

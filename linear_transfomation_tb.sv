@@ -9,7 +9,8 @@ ______________  \/  \/ | \/ | ______________
 	
 --English Description:
 	
---Version:VERA.1.0.0
+--Version:VERA.1.0.1
+	add M16
 --Data modified:
 --author:Young-ÎâÃ÷
 --E-mail: wmy367@Gmail.com
@@ -36,8 +37,8 @@ initial begin:INITIAL_CLOCK
 end
 //-----<< CLOCK AND RESET >>------------
 
-localparam		DSIZE	= 8,
-				DT_I	= 6, 
+localparam		DSIZE	= 12,
+				DT_I	= 8, 
 				DT_D	= 4;
 //----->> RANDOM BLOCK <<---------------
 class RandomPacket;
@@ -81,12 +82,13 @@ logic [DSIZE-1:0]	C11		;
 logic [DSIZE-1:0]	C12		;    
 logic [DSIZE-1:0]	C13		;    
 logic [DSIZE-1:0]	C14		;    
-logic [DSIZE-1:0]	C15		; 
+logic [DSIZE-1:0]	C15		;
+logic [DSIZE-1:0]	C16		;  
 	
 	
 //----->> INSTANCE <<------------------------
 
-localparam	DM	= 16;
+localparam	DM	= 2**DSIZE/16;
 
 linear_transfomation #(
 	.DSIZE				(DSIZE		),
@@ -107,7 +109,8 @@ linear_transfomation #(
 	.M12         		(DM*12      ),
 	.M13         		(DM*13      ),
 	.M14         		(DM*14      ),
-	.M15         		(DM*15      )
+	.M15         		(DM*15      ),
+	.M16				(DM*16-1		)
 )linear_transfomation_inst(
 	.clock 				(clk_50M	),	
 	.rst_n     			(rst_n      ),
@@ -131,7 +134,8 @@ linear_transfomation #(
 	.C12                (C12        ),
 	.C13                (C13        ),
 	.C14                (C14        ),
-	.C15                (C15        )
+	.C15                (C15        ),
+	.C16                (C16        )
 );
 //-----<< INSTANCE >>------------------------
 //----->> TEST TASK <<-----------------------
@@ -150,7 +154,7 @@ endtask:refresh_C_task
 task automatic gen_indata_task(ref logic [DSIZE-1:0]	data);
 	repeat(256)begin
 		@(posedge clock);
-		data += 1;
+		data += DM/16;
 	end
 endtask: gen_indata_task
 
@@ -171,6 +175,7 @@ task set_C_model_0_task;
 	C13		= DM* 13;
 	C14		= DM* 14;
 	C15		= DM* 15; 
+	C16		= DM* 16;
 endtask:set_C_model_0_task
 
 task set_C_model_1_task;
@@ -190,6 +195,7 @@ task set_C_model_1_task;
 	C13		= DM* 13/2;
 	C14		= DM* 14/2;
 	C15		= DM* 15/2;
+	C16		= DM* 16/2;
 endtask:set_C_model_1_task
 
 task set_C_model_2_task;
@@ -209,6 +215,7 @@ task set_C_model_2_task;
 	Random_in_task(C13,DM*12 + 1,DM *13 );
 	Random_in_task(C14,DM*13 + 1,DM *14 );
 	Random_in_task(C15,DM*14 + 1,DM *15 );
+	Random_in_task(C16,DM*15 + 1,DM *16 );
 endtask:set_C_model_2_task
 
 task set_C_model_sqr_task;    
@@ -227,7 +234,8 @@ task set_C_model_sqr_task;
 	C12		=    144;                     
 	C13		=    169;                     
 	C14		=    196;                     
-	C15		=    225;                     
+	C15		=    225;
+	C16		=    255;                     
 endtask:set_C_model_sqr_task 
 
 task set_C_model_log_task;    
@@ -246,7 +254,8 @@ task set_C_model_log_task;
 	C12		=     212	;                   
 	C13		=     224	;                   
 	C14		=     235	;                   
-	C15		=     246	;  
+	C15		=     246	; 
+	C16		=     255	; 
 endtask:set_C_model_log_task
 
 task set_C_model_cir_task;    
@@ -266,6 +275,7 @@ task set_C_model_cir_task;
 	C13		=       252	;                  
 	C14		=       254	;                  
 	C15		=       255	;
+	C16		=       255	;
 endtask:set_C_model_cir_task
                       
 
@@ -286,6 +296,7 @@ real	D11		;
 real	D12		;
 real	D13		;
 real	D14		;
+real	D15		;
 
 
 always@(*)begin
@@ -304,6 +315,7 @@ always@(*)begin
 	D12	= trans_to_real(linear_transfomation_inst.delta12);
 	D13	= trans_to_real(linear_transfomation_inst.delta13);
 	D14	= trans_to_real(linear_transfomation_inst.delta14);
+	D15	= trans_to_real(linear_transfomation_inst.delta15);
 end
 
 function real trans_to_real ( input [DT_I+DT_D-1:0] D);
@@ -320,7 +332,7 @@ task save_in_out_to_file;
 	file_id	= $fopen(file_name,"w");
 	ii = 0;
 	while(1)begin
-		@(posedge clock);
+		@(negedge clock);
 		$fwrite(file_id,"%d   %d\n",indata,outdata);
 		ii += 1;
 		if(ii == 260) break;
@@ -348,6 +360,7 @@ begin
 	$fwrite(file_id2,"%d   %d\n",linear_transfomation_inst.M13,C13);
 	$fwrite(file_id2,"%d   %d\n",linear_transfomation_inst.M14,C14);
 	$fwrite(file_id2,"%d   %d\n",linear_transfomation_inst.M15,C15);
+	$fwrite(file_id2,"%d   %d\n",linear_transfomation_inst.M16,C16);
 	$display("---->> SAVE PARAM FINISH<<----");
 	$fclose(file_id2);
 end

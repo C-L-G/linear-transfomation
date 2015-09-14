@@ -21,7 +21,7 @@ module gen_deltas_list #(
 	parameter					DSIZE			= 16, 
     parameter					DT_I			= 8, 
 	parameter					DT_D			= 4, 
-	parameter [DSIZE-1:0]		M00				= 16,
+	parameter [DSIZE-1:0]		M00				= 0,
 	parameter [DSIZE-1:0]		M01         	= 16+M00,
 	parameter [DSIZE-1:0]		M02         	= 16+M01,
 	parameter [DSIZE-1:0]		M03         	= 16+M02,
@@ -36,8 +36,8 @@ module gen_deltas_list #(
 	parameter [DSIZE-1:0]		M12         	= 16+M11,
 	parameter [DSIZE-1:0]		M13         	= 16+M12,
 	parameter [DSIZE-1:0]		M14         	= 16+M13,
-	parameter [DSIZE-1:0]		M15         	= 16+M14
-
+	parameter [DSIZE-1:0]		M15         	= 16+M14,
+	parameter [DSIZE-1:0]		M16         	= 16+M15
 )(
 	input					clock		,
 	input					rst_n       ,
@@ -59,7 +59,8 @@ module gen_deltas_list #(
 	input [DSIZE-1:0]		C12         , 
 	input [DSIZE-1:0]		C13         , 
 	input [DSIZE-1:0]		C14         , 
-	input [DSIZE-1:0]		C15         ,  
+	input [DSIZE-1:0]		C15         ,
+	input [DSIZE-1:0]		C16			,  
 
 	output [DT_I+DT_D-1:0]			delta00 	,
 	output [DT_I+DT_D-1:0]			delta01     ,
@@ -75,7 +76,8 @@ module gen_deltas_list #(
 	output [DT_I+DT_D-1:0]			delta11     ,
 	output [DT_I+DT_D-1:0]			delta12     ,
 	output [DT_I+DT_D-1:0]			delta13     ,
-	output [DT_I+DT_D-1:0]			delta14      
+	output [DT_I+DT_D-1:0]			delta14     ,
+	output [DT_I+DT_D-1:0]			delta15 
 );
 
 
@@ -95,7 +97,8 @@ always@(*)
 	IDLE:	nstate	= LAT;
 	LAT: 	if(cnt_fsh)		nstate	= FSH;
 			else			nstate	= LAT;
-	FSH:	if(cal_begin)	nstate	= IDLE;
+	FSH:	if(cal_begin)	nstate	= IDLE;  
+			else			nstate	= FSH;
 	default:				nstate	= IDLE;
 	endcase
 
@@ -137,6 +140,7 @@ reg [DSIZE-1:0]		DC11        ;
 reg [DSIZE-1:0]		DC12        ;
 reg [DSIZE-1:0]		DC13        ;
 reg [DSIZE-1:0]		DC14        ;
+reg [DSIZE-1:0]		DC15        ;
 
 //always@(posedge clock)begin
 always@(*)begin
@@ -155,6 +159,7 @@ always@(*)begin
 	DC12    = C13	- C12   ;
 	DC13    = C14	- C13   ;
 	DC14    = C15	- C14   ;
+	DC15    = C16	- C15   ;
 end
 	
 
@@ -176,6 +181,7 @@ gen_delta #(.X_DISPLACEMENT(M12-M11),.DSIZE(DSIZE),.DT_I(DT_I),.DT_D(DT_D))gen_d
 gen_delta #(.X_DISPLACEMENT(M13-M12),.DSIZE(DSIZE),.DT_I(DT_I),.DT_D(DT_D))gen_delta_inst12(.clock(clock),.y_displacement(DC12),.delta(delta12));
 gen_delta #(.X_DISPLACEMENT(M14-M13),.DSIZE(DSIZE),.DT_I(DT_I),.DT_D(DT_D))gen_delta_inst13(.clock(clock),.y_displacement(DC13),.delta(delta13));
 gen_delta #(.X_DISPLACEMENT(M15-M14),.DSIZE(DSIZE),.DT_I(DT_I),.DT_D(DT_D))gen_delta_inst14(.clock(clock),.y_displacement(DC14),.delta(delta14));   
+gen_delta #(.X_DISPLACEMENT(M16-M15),.DSIZE(DSIZE),.DT_I(DT_I),.DT_D(DT_D))gen_delta_inst15(.clock(clock),.y_displacement(DC15),.delta(delta15));   
 
 
 assign	cal_valid	= !cal_begin && valid;

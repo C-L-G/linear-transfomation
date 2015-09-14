@@ -256,4 +256,8 @@ endfunction
 
 assign	outdata	= odata_lat6[DSIZE]? {DSIZE{1'b1}} : odata_lat6[DSIZE-1:0];
 
+//----->> TEST <<--------------
+integer test_data;
+always@(*)	test_data	= { Mul_lat5[DSIZE+DT_I+DT_D-1:DT_D+1], |Mul_lat5[DT_D:DT_D-2]};
+//-----<< TEST >>--------------
 endmodule
